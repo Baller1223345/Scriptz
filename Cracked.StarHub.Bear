@@ -1,0 +1,282 @@
+-- Global variables for the ESP effect
+local espCheeseAltar = {}
+local espCheeseAltar2 = {}
+local espCheese2 = {}
+local espCheese1 = {}
+local espWires = {}
+local espColorCodePuzzle = {}
+local espColorCodes = {}
+
+-- Variables for the ESP activation state
+local espStates = {
+    CheeseAltar = false,
+    CheeseAltar2 = false,
+    Cheese2 = false,
+    Cheese1 = false,
+    WirePuzzle = false,
+    ColorCodePuzzle = false,
+    ColorCodes = false
+}
+
+-- Function to update the background color of buttons
+local function updateButtonBackground(button, isActive)
+    button.BackgroundColor3 = isActive and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(255, 255, 255)
+end
+
+-- Function to create and add a BillboardGui with text above an object
+local function createBillboardGui(parent, text, color)
+    local billboardGui = Instance.new("BillboardGui")
+    billboardGui.Adornee = parent
+    billboardGui.Size = UDim2.new(0, 100, 0, 50)
+    billboardGui.StudsOffset = Vector3.new(0, 2, 0)
+    billboardGui.AlwaysOnTop = true
+
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Parent = billboardGui
+    textLabel.Size = UDim2.new(1, 0, 1, 0)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Text = text
+    textLabel.TextColor3 = color
+    textLabel.TextScaled = true
+
+    billboardGui.Parent = parent
+    return billboardGui
+end
+
+-- Function to toggle ESP for a set of objects
+local function toggleESP(espTable, folder, objectName, color, text, displayText, activate)
+    if activate then
+        for _, object in pairs(folder:GetDescendants()) do
+            if object.Name == objectName then
+                if object:IsA("BasePart") then
+                    local espBox = Instance.new("BoxHandleAdornment")
+                    espBox.Size = object.Size
+                    espBox.Transparency = 0.5
+                    espBox.Color3 = color
+                    espBox.AlwaysOnTop = true
+                    espBox.ZIndex = 0
+                    espBox.Name = "ESP_" .. objectName
+                    espBox.Adornee = object
+                    espBox.Parent = object
+                    table.insert(espTable, espBox)
+                end
+
+                local billboardGui = createBillboardGui(object, displayText, color)
+                table.insert(espTable, billboardGui)
+            end
+        end
+    else
+        for _, esp in pairs(espTable) do
+            esp:Destroy()
+        end
+        for _, gui in pairs(game:GetService("Workspace"):GetDescendants()) do
+            if gui:IsA("BillboardGui") and gui.Adornee and gui.Adornee.Parent and gui.Adornee.Parent.Name == objectName then
+                gui:Destroy()
+            end
+        end
+        for i in pairs(espTable) do
+            espTable[i] = nil
+        end
+    end
+end
+
+-- Specific functions for the objects
+local function checkAndToggleESP()
+    local folder = game:GetService("Workspace"):FindFirstChild("PuzzleBin")
+    if folder then
+        -- CheeseAltar
+        local cheeseAltar = folder:FindFirstChild("CheeseAltar")
+        if cheeseAltar then
+            local decor = cheeseAltar:FindFirstChild("Decor")
+            if decor then
+                toggleESP(espCheeseAltar, cheeseAltar, "Decor", Color3.fromRGB(139, 69, 19), "Cheese Altar", "Cheese Altar", espStates.CheeseAltar)
+            end
+        end
+
+        -- CheeseAltar2
+        local cheeseAltar2 = folder:FindFirstChild("Puzzle | Cheese")
+        if cheeseAltar2 then
+            local decor = cheeseAltar2:FindFirstChild("Decor")
+            if decor then
+                toggleESP(espCheeseAltar2, cheeseAltar2, "Decor", Color3.fromRGB(139, 69, 19), "Cheese Altar 2", "Cheese Altar", espStates.CheeseAltar2)
+            end
+        end
+
+        -- Cheese2
+        local cheese2 = folder:FindFirstChild("Puzzle | Cheese")
+        if cheese2 then
+            local cheese = cheese2:FindFirstChild("Cheese")
+            if cheese then
+                toggleESP(espCheese2, cheese2, "Cheese", Color3.fromRGB(255, 255, 0), "Cheese 2", "Cheese 2", espStates.Cheese2)
+            end
+        end
+
+        -- Cheese1
+        local cheese1 = game:GetService("Workspace"):FindFirstChild("Map")
+        if cheese1 then
+            local entities = cheese1:FindFirstChild("_Entities")
+            if entities then
+                local cheese = entities:FindFirstChild("Cheese")
+                if cheese then
+                    toggleESP(espCheese1, entities, "Cheese", Color3.fromRGB(255, 255, 0), "Cheese 1", "Cheese 1", espStates.Cheese1)
+                end
+            end
+        end
+
+        -- WirePuzzle
+        toggleESP(espWires, folder, "Wire", Color3.fromRGB(255, 0, 0), "Wire Puzzle", "Wire Puzzle", espStates.WirePuzzle)
+
+        -- ColorCodePuzzle
+        local colorCode = folder:FindFirstChild("ColorCode")
+        if colorCode then
+            local decor = colorCode:FindFirstChild("Decor")
+            if decor then
+                toggleESP(espColorCodePuzzle, colorCode, "Decor", Color3.fromRGB(128, 0, 128), "Color Code Puzzle", "Insert Code", espStates.ColorCodePuzzle)
+            end
+        end
+
+        -- ColorCodes
+        if colorCode then
+            local clue = colorCode:FindFirstChild("Clue")
+            if clue then
+                toggleESP(espColorCodes, colorCode, "Clue", Color3.fromRGB(0, 0, 255), "Color Codes", "Code", espStates.ColorCodes)
+            end
+        end
+    end
+end
+
+-- ESP activation functions
+local function toggleCheeseAltarESP()
+    espStates.CheeseAltar = not espStates.CheeseAltar
+    checkAndToggleESP()
+end
+
+local function toggleCheeseAltar2ESP()
+    espStates.CheeseAltar2 = not espStates.CheeseAltar2
+    checkAndToggleESP()
+end
+
+local function toggleCheese2ESP()
+    espStates.Cheese2 = not espStates.Cheese2
+    checkAndToggleESP()
+end
+
+local function toggleCheese1ESP()
+    espStates.Cheese1 = not espStates.Cheese1
+    checkAndToggleESP()
+end
+
+local function toggleWirePuzzleESP()
+    espStates.WirePuzzle = not espStates.WirePuzzle
+    checkAndToggleESP()
+end
+
+local function toggleColorCodePuzzleESP()
+    espStates.ColorCodePuzzle = not espStates.ColorCodePuzzle
+    checkAndToggleESP()
+end
+
+local function toggleColorCodesESP()
+    espStates.ColorCodes = not espStates.ColorCodes
+    checkAndToggleESP()
+end
+
+-- Create the GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = game:GetService("CoreGui")
+ScreenGui.ResetOnSpawn = false
+
+local Frame = Instance.new("Frame")
+Frame.Parent = ScreenGui
+Frame.Active = true
+Frame.BackgroundColor3 = Color3.fromRGB(119, 124, 127)
+Frame.BorderColor3 = Color3.fromRGB(226, 226, 226)
+Frame.Draggable = true
+Frame.Position = UDim2.new(0.833333313, -451, 0.606741607, -191)
+Frame.Selectable = true
+Frame.Size = UDim2.new(0, 153, 0, 33)
+
+local TextLabel = Instance.new("TextLabel")
+TextLabel.Parent = Frame
+TextLabel.Active = true
+TextLabel.BackgroundColor3 = Color3.fromRGB(119, 124, 127)
+TextLabel.BackgroundTransparency = 1.000
+TextLabel.BorderColor3 = Color3.fromRGB(119, 124, 127)
+TextLabel.Position = UDim2.new(0.327688575, 0, 0.190135613, 0)
+TextLabel.Size = UDim2.new(0, 50, 0, 20)
+TextLabel.Font = Enum.Font.SourceSans
+TextLabel.Text = "Star Hack Hub - STN"
+TextLabel.TextColor3 = Color3.fromRGB(187, 255, 253)
+TextLabel.TextSize = 14.000
+TextLabel.TextStrokeColor3 = Color3.fromRGB(187, 255, 253)
+TextLabel.TextWrapped = true
+
+local ScrollingFrame = Instance.new("ScrollingFrame")
+ScrollingFrame.Parent = Frame
+ScrollingFrame.BackgroundColor3 = Color3.fromRGB(75, 75, 75)
+ScrollingFrame.BackgroundTransparency = 0.500
+ScrollingFrame.BorderSizePixel = 0
+ScrollingFrame.Position = UDim2.new(-0.00086286955, 0, 0.999025285, 0)
+ScrollingFrame.Selectable = false
+ScrollingFrame.Size = UDim2.new(0, 153, 0, 194)
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 300)
+ScrollingFrame.HorizontalScrollBarInset = Enum.ScrollBarInset.Always
+ScrollingFrame.ScrollBarThickness = 10
+
+-- Function to create buttons
+local function createButton(name, text, position, color, callback)
+    local button = Instance.new("TextButton")
+    button.Name = name
+    button.Parent = ScrollingFrame
+    button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    button.Position = position
+    button.Size = UDim2.new(0, 136, 0, 22)
+    button.Style = Enum.ButtonStyle.RobloxRoundButton
+    button.Font = Enum.Font.SourceSans
+    button.Text = text
+    button.TextColor3 = color
+    button.TextSize = 16.000
+    button.TextWrapped = true
+    button.MouseButton1Click:Connect(function()
+        callback()
+        updateButtonBackground(button, espStates[name:sub(1, -4)] or false)
+    end)
+    return button
+end
+
+local cheeseAltarButton = createButton("CheeseAltarESP", "Cheese Altar ESP", UDim2.new(0.0466145016, 0, 0.00465609878, 0), Color3.fromRGB(139, 69, 19), toggleCheeseAltarESP)
+local cheeseAltar2Button = createButton("CheeseAltar2ESP", "Cheese Altar 2 ESP", UDim2.new(0.0466145016, 0, 0.075656101, 0), Color3.fromRGB(139, 69, 19), toggleCheeseAltar2ESP)
+local cheese2Button = createButton("Cheese2ESP", "Cheese 2 ESP", UDim2.new(0.0466145016, 0, 0.146656103, 0), Color3.fromRGB(255, 255, 0), toggleCheese2ESP)
+local cheese1Button = createButton("Cheese1ESP", "Cheese 1 ESP", UDim2.new(0.0466145016, 0, 0.217656105, 0), Color3.fromRGB(255, 255, 0), toggleCheese1ESP)
+local wirePuzzleButton = createButton("WirePuzzleESP", "Wire Puzzle ESP", UDim2.new(0.0466145016, 0, 0.288656107, 0), Color3.fromRGB(255, 0, 0), toggleWirePuzzleESP)
+local colorCodePuzzleButton = createButton("ColorCodePuzzleESP", "Color Code Puzzle ESP", UDim2.new(0.0466145016, 0, 0.359656109, 0), Color3.fromRGB(128, 0, 128), toggleColorCodePuzzleESP)
+local colorCodesButton = createButton("ColorCodesESP", "Color Codes ESP", UDim2.new(0.0466145016, 0, 0.430656111, 0), Color3.fromRGB(0, 0, 255), toggleColorCodesESP)
+
+-- Adjust the height of the ScrollingFrame based on the number of buttons
+ScrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 33 * (#{
+    cheeseAltarButton,
+    cheeseAltar2Button,
+    cheese2Button,
+    cheese1Button,
+    wirePuzzleButton,
+    colorCodePuzzleButton,
+    colorCodesButton
+} + 1))
+
+-- ESP check loop
+local function startESPCheck()
+    while true do
+        wait(5)
+        checkAndToggleESP()
+    end
+end
+
+-- Start the check loop
+startESPCheck()
+
+-- User notification
+game:GetService("StarterGui"):SetCore("SendNotification", {
+    Title = "GUI Loaded",
+    Text = "Cracked by Shadow69 - Modify code if you want, I don't care.",
+    Duration = 7
+})
