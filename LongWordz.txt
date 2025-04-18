@@ -1,0 +1,259 @@
+local player = game.Players.LocalPlayer
+local playerGui = player.PlayerGui
+local TextChatService = game:GetService("TextChatService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+-- Create ScreenGui
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "LongWordzGui"
+screenGui.Parent = playerGui
+
+-- Create main frame (panel)
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainFrame"
+mainFrame.Size = UDim2.new(0, 300, 0, 400)
+mainFrame.Position = UDim2.new(0, 100, 0, 100)
+mainFrame.BackgroundColor3 = Color3.new(0.8, 0.8, 0.8)
+mainFrame.Parent = screenGui
+
+-- Create title label
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "Title"
+titleLabel.Size = UDim2.new(1, 0, 0, 30)
+titleLabel.Position = UDim2.new(0, 0, 0, 0)
+titleLabel.BackgroundTransparency = 1
+titleLabel.Text = "Long Wordz"
+titleLabel.TextSize = 20
+titleLabel.Font = Enum.Font.SourceSansBold
+titleLabel.Parent = mainFrame
+
+-- Create close button
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Size = UDim2.new(0, 30, 0, 30)
+closeButton.Position = UDim2.new(1, -30, 0, 0)
+closeButton.BackgroundColor3 = Color3.new(1, 0, 0)
+closeButton.Text = "X"
+closeButton.TextColor3 = Color3.new(1, 1, 1)
+closeButton.TextSize = 18
+closeButton.Parent = mainFrame
+
+-- Create scrolling frame for word buttons
+local scrollingFrame = Instance.new("ScrollingFrame")
+scrollingFrame.Name = "WordList"
+scrollingFrame.Size = UDim2.new(1, -10, 1, -40)
+scrollingFrame.Position = UDim2.new(0, 5, 0, 35)
+scrollingFrame.BackgroundTransparency = 1
+scrollingFrame.ScrollBarThickness = 8
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, 0)
+scrollingFrame.Parent = mainFrame
+
+-- Add UIListLayout to scrolling frame
+local listLayout = Instance.new("UIListLayout")
+listLayout.SortOrder = Enum.SortOrder.LayoutOrder
+listLayout.Padding = UDim.new(0, 5)
+listLayout.Parent = scrollingFrame
+
+-- Define 100 harder, more complex words with accurate descriptions
+local words = {
+    {word = "Pneumonoultramicroscopicsilicovolcanoconiosis", description = "A lung disease from inhaling fine silica dust, often cited as one of the longest English words."},
+    {word = "Antidisestablishmentarianistically", description = "Pertaining to opposition against withdrawing state support from an established church."},
+    {word = "Hippopotomonstrosesquippedaliophobic", description = "Ironically, relating to the fear of long words, an extended form of the phobia."},
+    {word = "Floccinaucinihilipilificational", description = "Relating to the act of deeming something utterly worthless or trivial."},
+    {word = "Supercalifragilisticexpialidociously", description = "In a manner that is extraordinarily wonderful, coined for its whimsical complexity."},
+    {word = "Pseudopseudohypoparathyroidismal", description = "Pertaining to a genetic disorder mimicking hypoparathyroidism symptoms without calcium imbalance."},
+    {word = "Electroencephalographically", description = "Concerning the measurement of electrical brain activity via electroencephalography."},
+    {word = "Honorificabilitudinitatibuses", description = "Plural form of a Latin term for 'honorableness,' famously used by Shakespeare."},
+    {word = "Thyroparathyroidectomization", description = "The surgical removal of both thyroid and parathyroid glands."},
+    {word = "Dichlorodiphenyltrichloroethanical", description = "Relating to DDT, a synthetic pesticide with environmental impacts."},
+    {word = "Spectrophotometrically", description = "Involving the measurement of light intensity across a spectrum for analysis."},
+    {word = "Otorhinolaryngologically", description = "Pertaining to the medical study of ear, nose, and throat conditions."},
+    {word = "Immunoelectrophoretically", description = "Relating to protein separation using electric fields and immune reactions."},
+    {word = "Psychophysiologically", description = "Concerning the interplay between psychological and physiological processes."},
+    {word = "Microspectrophotometrically", description = "Involving precise light absorption measurements in microscopic samples."},
+    {word = "Hexakosioihexekontahexaphobically", description = "Pertaining to an irrational fear of the number 666."},
+    {word = "Parastratiosphecomyiaceous", description = "Relating to a genus of flies with an exceptionally complex name."},
+    {word = "Incomprehensibilitudinous", description = "Characterized by being impossible to comprehend or grasp fully."},
+    {word = "Disproportionabilitudinous", description = "Marked by extreme lack of proportion or balance."},
+    {word = "Electrocardiographically", description = "Involving the recording of heart electrical activity for diagnostic purposes."},
+    {word = "Hypercholesterolemic", description = "Characterized by excessively high cholesterol levels in the blood."},
+    {word = "Magnetohydrodynamically", description = "Pertaining to the dynamics of electrically conducting fluids in magnetic fields."},
+    {word = "Neurophysiologically", description = "Relating to the functional mechanisms of the nervous system."},
+    {word = "Pharmacokinetically", description = "Concerning the absorption, distribution, and elimination of drugs in the body."},
+    {word = "Roentgenographically", description = "Involving the use of X-rays for medical imaging."},
+    {word = "Stereomicroscopically", description = "Pertaining to three-dimensional observation using a stereomicroscope."},
+    {word = "Ultracentrifugationally", description = "Relating to high-speed centrifugation for separating minute particles."},
+    {word = "Xenotransplantationally", description = "Involving the transplantation of organs between different species."},
+    {word = "Dendrochronologically", description = "Pertaining to dating events through the study of tree ring patterns."},
+    {word = "Epiphenomenalistically", description = "Relating to the view that mental events are secondary to physical processes."},
+    {word = "Chronosynclasticinfundibular", description = "A fictional term for a point where all perspectives converge, from Kurt Vonnegut's works."},
+    {word = "Glottochronologically", description = "Involving the study of language divergence over time using statistical methods."},
+    {word = "Hemidemisemiquaveristically", description = "Pertaining to an extremely short musical note, 1/64th of a whole note."},
+    {word = "Immunohistochemically", description = "Relating to the detection of antigens in tissues using antibodies."},
+    {word = "Lymphangioleiomyomatosical", description = "Pertaining to a rare lung disease involving smooth muscle cell growth."},
+    {word = "Micropaleontologically", description = "Involving the study of microscopic fossils for geological insights."},
+    {word = "Neuroendocrinologically", description = "Pertaining to the interaction between the nervous and endocrine systems."},
+    {word = "Ophthalmodynamometrically", description = "Involving the measurement of blood pressure in retinal arteries."},
+    {word = "Paleomagnetically", description = "Relating to the study of Earth’s ancient magnetic fields in rocks."},
+    {word = "Quasihyperbolically", description = "In a manner resembling exaggerated or extreme exaggeration."},
+    {word = "Rhinencephalically", description = "Pertaining to the olfactory brain regions controlling smell."},
+    {word = "Sesquicentennially", description = "Occurring every 150 years or relating to such an anniversary."},
+    {word = "Thermoluminescently", description = "Involving the emission of light from a material when heated."},
+    {word = "Uncharacteristically", description = "In a way that deviates from typical behavior or traits."},
+    {word = "Ventrolaterodorsally", description = "Pertaining to a direction combining ventral, lateral, and dorsal aspects."},
+    {word = "Xeroradiographically", description = "Involving imaging techniques using dry photocopying processes."},
+    {word = "Ytterbiumspectroscopically", description = "Relating to the analysis of ytterbium using spectroscopic methods."},
+    {word = "Zygomaticoauricularly", description = "Pertaining to the region between the cheekbone and ear."},
+    {word = "Anthropomorphologically", description = "Involving the attribution of human characteristics to non-human entities."},
+    {word = "Bioluminescentially", description = "Relating to the production of light by living organisms."},
+    {word = "Chemotherapeutically", description = "Involving the use of chemicals to treat diseases, especially cancer."},
+    {word = "Deinstitutionalizationally", description = "Pertaining to the process of moving patients from institutions to community care."},
+    {word = "Electrooculographically", description = "Involving the measurement of eye movement via electrical signals."},
+    {word = "Fibrinogenolytically", description = "Relating to the breakdown of fibrinogen in blood clotting processes."},
+    {word = "Glycophosphatidylethanolaminic", description = "Pertaining to a complex lipid molecule in cell membranes."},
+    {word = "Hepatocholangiocarcinomic", description = "Relating to a rare cancer affecting liver and bile ducts."},
+    {word = "Infinitesimally", description = "In an extremely small or immeasurably minute manner."},
+    {word = "Juxtaglomerularly", description = "Pertaining to structures near the kidney’s glomerulus."},
+    {word = "Keratoconjunctivitically", description = "Involving inflammation of both the cornea and conjunctiva."},
+    {word = "Lexicostatistically", description = "Relating to statistical analysis of vocabulary for linguistic studies."},
+    {word = "Microelectromechanically", description = "Involving tiny mechanical systems integrated with electronics."},
+    {word = "Neuropharmacologically", description = "Pertaining to the effects of drugs on the nervous system."},
+    {word = "Oligodendrogliopathically", description = "Relating to disorders of oligodendroglia cells in the brain."},
+    {word = "Parthenogenetically", description = "Involving reproduction without fertilization, as in some organisms."},
+    {word = "Quadragintacentillionically", description = "Pertaining to the impossibly large number 10^303."},
+    {word = "Reticuloendotheliatically", description = "Relating to the reticuloendothelial system in immune responses."},
+    {word = "Splanchnocranially", description = "Pertaining to the visceral and cranial regions combined."},
+    {word = "Teleoroentgenographically", description = "Involving X-ray imaging from a distance for reduced distortion."},
+    {word = "Ultrasonographically", description = "Relating to imaging using high-frequency sound waves."},
+    {word = "Vasoconstrictively", description = "In a manner that causes blood vessels to narrow."},
+    {word = "Whippersnapperistically", description = "In the cheeky, impertinent style of a young person."},
+    {word = "Xenodiagnostically", description = "Involving the use of organisms to diagnose diseases in others."},
+    {word = "Ypsilothalamic", description = "Pertaining to a hypothetical Y-shaped structure in the thalamus."},
+    {word = "Zymographically", description = "Relating to the study of enzymes via gel electrophoresis."},
+    {word = "Arteriolosclerotically", description = "Pertaining to the hardening of small arteries."},
+    {word = "Bacteriochlorophyllically", description = "Involving pigments used by bacteria for photosynthesis."},
+    {word = "Cephalometrically", description = "Relating to the measurement of head structures for orthodontics."},
+    {word = "Dermatoglyphically", description = "Pertaining to the study of skin ridge patterns, like fingerprints."},
+    {word = "Encephalomyocarditically", description = "Involving inflammation of both brain and heart muscle."},
+    {word = "Fluorochromatically", description = "Relating to the use of fluorescent dyes in microscopy."},
+    {word = "Gastroesophageally", description = "Pertaining to the stomach and esophagus connection."},
+    {word = "Hematopoietically", description = "Involving the formation of blood cells in the body."},
+    {word = "Ichthyornithologically", description = "Relating to the study of extinct toothed birds."},
+    {word = "Jurisprudentially", description = "Pertaining to the philosophy or science of law."},
+    {word = "Kymographically", description = "Involving the recording of physiological movements graphically."},
+    {word = "Laparoscopically", description = "Relating to minimally invasive surgery using a laparoscope."},
+    {word = "Myeloproliferatively", description = "Pertaining to excessive bone marrow cell production."},
+    {word = "Nephrotoxically", description = "In a manner toxic to the kidneys."},
+    {word = "Osteoarthritically", description = "Relating to degenerative joint disease."},
+    {word = "Phonocardiographically", description = "Involving the recording of heart sounds."},
+    {word = "Quattrocentistically", description = "In the style of the 15th-century Italian Renaissance."},
+    {word = "Radioimmunologically", description = "Relating to immune assays using radioactive markers."},
+    {word = "Saccharomycetically", description = "Pertaining to yeast fungi of the Saccharomyces genus."},
+    {word = "Tachistoscopically", description = "Involving brief visual stimuli for perception studies."},
+    {word = "Uvulopalatopharyngeally", description = "Pertaining to surgery on the uvula, palate, and pharynx."},
+    {word = "Ventriculographically", description = "Involving imaging of the brain’s ventricles."},
+    {word = "Weathercockishly", description = "In a fickle or changeable manner, like a weather vane."},
+    {word = "Xanthochromatically", description = "Relating to yellowish discoloration, as in cerebrospinal fluid."},
+    {word = "Yottaelectronvoltically", description = "Pertaining to energy measurements in yottaelectronvolts (10^24 eV)."}
+}
+
+-- Function to send chat message
+local function sendChatMessage(message)
+    print("Attempting to send message: " .. message)
+    if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+        local success, errorMsg = pcall(function()
+            local textChannel = TextChatService.TextChannels and TextChatService.TextChannels.RBXGeneral
+            if textChannel then
+                textChannel:SendAsync(message)
+                print("Sent via TextChatService to RBXGeneral")
+            else
+                print("No RBXGeneral channel found")
+            end
+        end)
+        if not success then
+            print("TextChatService error: " .. tostring(errorMsg))
+        end
+    else
+        print("Falling back to legacy chat")
+        local success, errorMsg = pcall(function()
+            local chatEvents = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
+            if chatEvents then
+                local sayMessageRequest = chatEvents:FindFirstChild("SayMessageRequest")
+                if sayMessageRequest then
+                    sayMessageRequest:FireServer(message, "All")
+                    print("Sent via legacy chat")
+                else
+                    print("SayMessageRequest not found")
+                end
+            else
+                print("DefaultChatSystemChatEvents not found")
+            end
+        end)
+        if not success then
+            print("Legacy chat error: " .. tostring(errorMsg))
+        end
+    end
+end
+
+-- Create buttons for each word and update canvas size
+for i, wordData in ipairs(words) do
+    local button = Instance.new("TextButton")
+    button.Name = "WordButton_" .. i
+    button.Size = UDim2.new(1, -10, 0, 30)
+    button.BackgroundColor3 = Color3.new(0.9, 0.9, 0.9)
+    button.Text = wordData.word
+    button.TextSize = 16
+    button.TextScaled = true
+    button.TextWrapped = true
+    button.LayoutOrder = i
+    button.Parent = scrollingFrame
+    button.MouseButton1Click:Connect(function()
+        local message = wordData.word .. ": " .. wordData.description
+        sendChatMessage(message)
+    end)
+end
+
+-- Update CanvasSize based on number of buttons
+local buttonHeight = 30
+local padding = 5
+local totalHeight = #words * (buttonHeight + padding) - padding
+scrollingFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+
+-- Dragging functionality
+local UIS = game:GetService("UserInputService")
+local dragging = false
+local dragStart = nil
+local startPos = nil
+
+UIS.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        local mousePos = Vector2.new(input.Position.X, input.Position.Y)
+        local guiPos = mainFrame.AbsolutePosition
+        local guiSize = mainFrame.AbsoluteSize
+        if mousePos.X >= guiPos.X and mousePos.X <= guiPos.X + guiSize.X and
+           mousePos.Y >= guiPos.Y and mousePos.Y <= guiPos.Y + guiSize.Y then
+            dragging = true
+            dragStart = mousePos
+            startPos = mainFrame.Position
+        end
+    end
+end)
+
+UIS.InputChanged:Connect(function(input)
+    if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+        local mousePos = Vector2.new(input.Position.X, input.Position.Y)
+        local delta = mousePos - dragStart
+        mainFrame.Position = UDim2.new(0, startPos.X.Offset + delta.X, 0, startPos.Y.Offset + delta.Y)
+    end
+end)
+
+UIS.InputEnded:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 then
+        dragging = false
+    end
+end)
+
+-- Close functionality
+closeButton.MouseButton1Click:Connect(function()
+    screenGui:Destroy()
+end)
