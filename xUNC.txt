@@ -1,6 +1,3 @@
-print("Skidded by NINE")
-wait(2.5)
-
 local xUNC = {}
 xUNC.version = "1.0"
 
@@ -528,8 +525,8 @@ xUNC.run = function(self)
     print("\n🔄 xUNC completed at: " .. os.date("%Y-%m-%d %H:%M:%S"))
 
     game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "💀",
-        Text = "SKIDDED xUNC :: Test completed successfully! Check console for detailed results.",
+        Title = "✅",
+        Text = "xUNC :: Test completed successfully! Check console for detailed results.",
         Duration = 5
     })
 
