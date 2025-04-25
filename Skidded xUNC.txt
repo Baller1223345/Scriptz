@@ -1,0 +1,554 @@
+print("Skidded by NINE")
+wait(2.5)
+
+local xUNC = {}
+xUNC.version = "1.0"
+
+xUNC.functions = {
+    { ["getrawmetatable"] = "getrawmetatable", ["type"] = "function", ["weight"] = 1.5 },
+    { ["getgenv"] = "getgenv", ["type"] = "function", ["weight"] = 1.2 },
+    { ["hookfunction"] = "hookfunction", ["type"] = "function", ["weight"] = 1.8 },
+    { ["getcallingscript"] = "getcallingscript", ["type"] = "function", ["weight"] = 1.7 },
+    { ["getrenv"] = "getrenv", ["type"] = "function", ["weight"] = 1.4 },
+    { ["setrawmetatable"] = "setrawmetatable", ["type"] = "function", ["weight"] = 1.1 },
+    { ["getfenv"] = "getfenv", ["type"] = "function", ["weight"] = 1.6 },
+    { ["setmetatable"] = "setmetatable", ["type"] = "function", ["weight"] = 1.4 },
+    { ["newcclosure"] = "newcclosure", ["type"] = "function", ["weight"] = 1.3 },
+    { ["getnamecallmethod"] = "getnamecallmethod", ["type"] = "function", ["weight"] = 1.0 },
+    { ["getgc"] = "getgc", ["type"] = "function", ["weight"] = 1.2 },
+    { ["setfenv"] = "setfenv", ["type"] = "function", ["weight"] = 2.0 },
+    { ["hookmetamethod"] = "hookmetamethod", ["type"] = "function", ["weight"] = 1.7 },
+    { ["checkcaller"] = "checkcaller", ["type"] = "function", ["weight"] = 1.5 },
+    { ["getreg"] = "getreg", ["type"] = "function", ["weight"] = 1.2 },
+    { ["getmetatable"] = "getmetatable", ["type"] = "function", ["weight"] = 1.4 },
+    { ["getconstant"] = "getconstant", ["type"] = "function", ["weight"] = 1.6 },
+    { ["setconstant"] = "setconstant", ["type"] = "function", ["weight"] = 1.5 },
+    { ["getinfo"] = "getinfo", ["type"] = "function", ["weight"] = 1.1 },
+    { ["getupvalue"] = "getupvalue", ["type"] = "function", ["weight"] = 0.8 },
+    { ["setupvalue"] = "setupvalue", ["type"] = "function", ["weight"] = 1.6 },
+    { ["getupvalues"] = "getupvalues", ["type"] = "function", ["weight"] = 1.6 },
+    { ["getconstants"] = "getconstants", ["type"] = "function", ["weight"] = 0.9 },
+    { ["getprotos"] = "getprotos", ["type"] = "function", ["weight"] = 1.7 },
+    { ["getproto"] = "getproto", ["type"] = "function", ["weight"] = 1.5 }
+}
+
+xUNC.securityFunctions = {
+    { ["secure_call"] = "secure_call", ["type"] = "function", ["weight"] = 0.8 },
+    { ["checkstack"] = "checkstack", ["type"] = "function", ["weight"] = 1.0 },
+    { ["getthreadidentity"] = "getthreadidentity", ["type"] = "function", ["weight"] = 1.2 },
+    { ["setthreadidentity"] = "setthreadidentity", ["type"] = "function", ["weight"] = 0.9 },
+    { ["getidentity"] = "getidentity", ["type"] = "function", ["weight"] = 0.5 },
+    { ["setidentity"] = "setidentity", ["type"] = "function", ["weight"] = 1.3 },
+    { ["getthreadcontext"] = "getthreadcontext", ["type"] = "function", ["weight"] = 1.3 },
+    { ["setthreadcontext"] = "setthreadcontext", ["type"] = "function", ["weight"] = 1.2 },
+    { ["checkpermissions"] = "checkpermissions", ["type"] = "function", ["weight"] = 1.1 },
+    { ["getpermissions"] = "getpermissions", ["type"] = "function", ["weight"] = 1.1 },
+    { ["setpermissions"] = "setpermissions", ["type"] = "function", ["weight"] = 1.0 },
+    { ["getthreadid"] = "getthreadid", ["type"] = "function", ["weight"] = 1.4 },
+    { ["setthreadid"] = "setthreadid", ["type"] = "function", ["weight"] = 1.4 },
+    { ["checkthread"] = "checkthread", ["type"] = "function", ["weight"] = 1.0 },
+    { ["getthreadinfo"] = "getthreadinfo", ["type"] = "function", ["weight"] = 1.0 },
+    { ["setthreadinfo"] = "setthreadinfo", ["type"] = "function", ["weight"] = 1.6 },
+    { ["getsecurestate"] = "getsecurestate", ["type"] = "function", ["weight"] = 1.6 },
+    { ["setsecurestate"] = "setsecurestate", ["type"] = "function", ["weight"] = 1.4 },
+    { ["checksecure"] = "checksecure", ["type"] = "function", ["weight"] = 1.5 },
+    { ["getsecurelevel"] = "getsecurelevel", ["type"] = "function", ["weight"] = 1.4 },
+    { ["setsecurelevel"] = "setsecurelevel", ["type"] = "function", ["weight"] = 1.3 }
+}
+
+xUNC.fileSystemFunctions = {
+    { ["readfile"] = "readfile", ["type"] = "function", ["weight"] = 1.0 },
+    { ["writefile"] = "writefile", ["type"] = "function", ["weight"] = 1.5 },
+    { ["appendfile"] = "appendfile", ["type"] = "function", ["weight"] = 1.3 },
+    { ["delfile"] = "delfile", ["type"] = "function", ["weight"] = 1.4 },
+    { ["listfiles"] = "listfiles", ["type"] = "function", ["weight"] = 1.2 },
+    { ["isfile"] = "isfile", ["type"] = "function", ["weight"] = 1.1 },
+    { ["isfolder"] = "isfolder", ["type"] = "function", ["weight"] = 1.2 },
+    { ["makefolder"] = "makefolder", ["type"] = "function", ["weight"] = 1.2 },
+    { ["delfolder"] = "delfolder", ["type"] = "function", ["weight"] = 1.1 },
+    { ["getfilesize"] = "getfilesize", ["type"] = "function", ["weight"] = 1.3 }
+}
+
+xUNC.debugFunctions = {
+    { ["debug.getinfo"] = "debug.getinfo", ["type"] = "function", ["weight"] = 1.6 },
+    { ["debug.setmetatable"] = "debug.setmetatable", ["type"] = "function", ["weight"] = 1.6 },
+    { ["debug.getupvalue"] = "debug.getupvalue", ["type"] = "function", ["weight"] = 1.0 },
+    { ["debug.setupvalue"] = "debug.setupvalue", ["type"] = "function", ["weight"] = 1.7 },
+    { ["debug.getconstant"] = "debug.getconstant", ["type"] = "function", ["weight"] = 1.2 },
+    { ["debug.setconstant"] = "debug.setconstant", ["type"] = "function", ["weight"] = 1.5 },
+    { ["debug.getproto"] = "debug.getproto", ["type"] = "function", ["weight"] = 1.8 },
+    { ["debug.setproto"] = "debug.setproto", ["type"] = "function", ["weight"] = 1.6 },
+    { ["debug.getstack"] = "debug.getstack", ["type"] = "function", ["weight"] = 1.0 },
+    { ["debug.setstack"] = "debug.setstack", ["type"] = "function", ["weight"] = 1.4 },
+    { ["debug.getfenv"] = "debug.getfenv", ["type"] = "function", ["weight"] = 1.2 }
+}
+
+xUNC.dllHints = {
+    "Synapse", "Krnl", "Fluxus", "Oxygen", "Temple", "Trigon", "Calamari", "Evon", "JJSploit", "Celestial",
+    "Hydrogen", "WRD", "Generic", "ScriptWare", "Sentinel", "SirHurt", "ProtoSmasher", "EasyExploits", 
+    "WeAreDevs", "Comet", "Vega", "Null", "Exploit", "Cheat", "Hack", "Inject", "Mod", "Trainer", 
+    "Executor", "Lua", "Roblox", "API", "Bypass", "Security", "Advanced", "Premium", "Elite", 
+    "Pro", "Ultra"
+}
+
+xUNC.executorBenchmarks = {
+    ["🧸 Synapse X"] = { ["score"] = 98.5, ["tier"] = "S" },
+    ["🧸 Script-Ware"] = { ["score"] = 97, ["tier"] = "S" },
+    ["🧸 KRNL"] = { ["score"] = 92.5, ["tier"] = "S" },
+    ["🧸 Fluxus"] = { ["score"] = 84, ["tier"] = "A" },
+    ["🧸 Oxygen U"] = { ["score"] = 78.5, ["tier"] = "A" },
+    ["🧸 Temple"] = { ["score"] = 72, ["tier"] = "B" },
+    ["🧸 Trigon"] = { ["score"] = 68.5, ["tier"] = "B" },
+    ["🧸 Calamari"] = { ["score"] = 65, ["tier"] = "B" },
+    ["🧸 Evon"] = { ["score"] = 62, ["tier"] = "C" },
+    ["🧸 JJSploit"] = { ["score"] = 58, ["tier"] = "C" },
+    ["🧸 Celestial"] = { ["score"] = 55.5, ["tier"] = "C" },
+    ["🧸 Hydrogen"] = { ["score"] = 52, ["tier"] = "D" },
+    ["🧸 WRD API"] = { ["score"] = 48, ["tier"] = "D" },
+    ["🧸 Generic"] = { ["score"] = 42, ["tier"] = "F" }
+}
+
+xUNC.checkFunctionSet = function(self, functions, category)
+    local totalFuncs = 0
+    local weightedScore = 0
+    local results = {}
+    local categoryStats = {}
+
+    for _, func in ipairs(functions) do
+        local name = func[1]
+        local weight = func.weight
+        local cat = category
+        local available = false
+
+        if not categoryStats[cat] then
+            categoryStats[cat] = { total = 0, passed = 0, weight = 0, weightedPass = 0 }
+        end
+        categoryStats[cat].total = categoryStats[cat].total + 1
+
+        local success, result = pcall(function()
+            if cat == "debug" then
+                return type(debug) == "table" and type(debug[name]) == "function"
+            else
+                return type(getfenv()[name]) == "function" or type(getfenv()[name]) == "table"
+            end
+        end)
+
+        if success and result then
+            available = true
+            totalFuncs = totalFuncs + 1
+            weightedScore = weightedScore + weight
+            categoryStats[cat].passed = categoryStats[cat].passed + 1
+            categoryStats[cat].weightedPass = categoryStats[cat].weightedPass + weight
+            print(("✅ %s : FOUND (weight: %.1f)"):format(name, weight))
+        else
+            print(("🚫 %s : missing or invalid (weight: %.1f)"):format(name, weight))
+        end
+
+        results[name] = { available = available, category = cat, weight = weight }
+        categoryStats[cat].weight = categoryStats[cat].weight + weight
+    end
+
+    local passPercent = (totalFuncs / #functions) * 100
+    local weightedPercent = (weightedScore / categoryStats[category].weight) * 100
+
+    print(("→ %s passed: %d/%d (%.1f%%)"):format(category, totalFuncs, #functions, passPercent))
+    print(("→ Weighted score: %.2f/%.2f (%.1f%%)"):format(weightedScore, categoryStats[category].weight, weightedPercent))
+
+    print("\n📊 Category breakdown:")
+    for cat, stats in pairs(categoryStats) do
+        local percent = (stats.passed / stats.total) * 100
+        local weightedPercent = (stats.weightedPass / stats.weight) * 100
+        print(("  %s: %d/%d (%.1f%%), weighted: %.1f%%"):format(cat, stats.passed, stats.total, percent, weightedPercent))
+    end
+
+    return {
+        totalPassed = totalFuncs,
+        totalFunctions = #functions,
+        weightedScore = weightedScore,
+        totalWeight = categoryStats[category].weight,
+        results = results,
+        categoryStats = categoryStats,
+        percentPassed = passPercent,
+        weightedScorePercent = weightedPercent
+    }
+end
+
+xUNC.detectEnvironment = function(self)
+    print("\n🔍 Detecting environment features...")
+    local env = {}
+
+    local executorName = (getexecutorname and getexecutorname()) or (identifyexecutor and identifyexecutor()) or "Unknown"
+    env.executorName = executorName
+    print(("→ ✅ Executor name: %s"):format(executorName))
+
+    env.isLuau = (type(isluau) == "function" and isluau()) or false
+    print(("→ ✅ Luau environment: %s"):format(env.isLuau and "Yes" or "No"))
+
+    env.isSS = false
+    pcall(function()
+        env.isSS = (type(getsenv) == "function" and pcall(function() return #getsenv(script) > 0 end))
+    end)
+    print(("→ ✅ Server-side capabilities: %s"):format(env.isSS and "Yes" or "No"))
+
+    env.hasUI = (type(Drawing) == "table" or type(Drawing) == "userdata")
+    print(("→ ✅ Drawing library: %s"):format(env.hasUI and "Yes" or "No"))
+
+    env.hasAdvancedMeta = false
+    pcall(function()
+        local mt = getrawmetatable(game)
+        env.hasAdvancedMeta = (type(mt) == "table" and type(hookmetamethod) == "function")
+    end)
+    print(("→ ✅ Advanced metamethod support: %s"):format(env.hasAdvancedMeta and "Yes" or "No"))
+
+    env.isSecure = type(checkcaller) == "function"
+    print(("→ ✅ Secure environment: %s"):format(env.isSecure and "Yes" or "No"))
+
+    env.hasHWIDSpoofing = (type(gethwid) == "function" or type(spoofhwid) == "function")
+    print(("→ ✅ HWID spoofing: %s"):format(env.hasHWIDSpoofing and "Yes" or "No"))
+
+    local sandboxLevel = 0
+    if (type(getidentity) == "function" or type(getthreadidentity) == "function") then
+        local getIdentity = getidentity or getthreadidentity
+        sandboxLevel = getIdentity() or 0
+    end
+    env.sandboxLevel = sandboxLevel
+    print(("→ ✅ Sandbox level: %d"):format(sandboxLevel))
+
+    env.compatLayers = {}
+    if type(is_sirhurt_closure) == "function" then table.insert(env.compatLayers, "SirHurt") end
+    if type(is_synapse_function) == "function" then table.insert(env.compatLayers, "Synapse") end
+    if type(is_krnl_closure) == "function" then table.insert(env.compatLayers, "Krnl") end
+    if #env.compatLayers > 0 then
+        print(("→ ✅ Compatibility layers: %s"):format(table.concat(env.compatLayers, ", ")))
+    else
+        print("→ 🚫 No compatibility layers detected")
+    end
+
+    return env
+end
+
+xUNC.estimateDLL = function(self)
+    print("\n✅ Estimating DLL/executor type...")
+    local result = { name = "UNKNOWN", confidence = 0, matches = {} }
+    local executorName = ""
+
+    if getexecutorname then
+        executorName = getexecutorname()
+        result.detectionMethod = "getexecutorname"
+    elseif identifyexecutor then
+        executorName = identifyexecutor()
+        result.detectionMethod = "identifyexecutor"
+    elseif SENTINEL_LOADED then
+        executorName = "Sentinel"
+        result.detectionMethod = "SENTINEL_LOADED"
+    elseif syn and syn.crypt then
+        executorName = "Synapse"
+        result.detectionMethod = "syn.crypt"
+    elseif KRNL_LOADED then
+        executorName = "Krnl"
+        result.detectionMethod = "KRNL_LOADED"
+    else
+        result.detectionMethod = "none"
+        print("🚫 No executor detection method available")
+        return result
+    end
+
+    if executorName == "" then
+        print("🚫 Executor name is blank → DLL = UNKNOWN")
+        return result
+    end
+
+    print(("→ ✅ Executor detection reports: %q"):format(executorName))
+    local lowerName = string.lower(executorName)
+    local bestMatch = nil
+    local bestConfidence = 0
+
+    for _, hint in ipairs(self.dllHints) do
+        local confidence = 0
+        local lowerHint = string.lower(hint)
+
+        if lowerName == lowerHint then
+            confidence = 1
+        elseif lowerName:find(lowerHint) then
+            confidence = 0.8
+        elseif lowerHint:find(lowerName) then
+            confidence = 0.6
+        else
+            local matches = 0
+            for i = 1, math.min(#lowerName, #lowerHint) do
+                if lowerName:sub(i, i) == lowerHint:sub(i, i) then
+                    matches = matches + 1
+                end
+            end
+            confidence = matches / math.max(#lowerName, #lowerHint)
+            if confidence > 0.3 then
+                table.insert(result.matches, { hint = hint, confidence = confidence })
+            end
+        end
+
+        if confidence > bestConfidence then
+            bestConfidence = confidence
+            bestMatch = hint:upper()
+        end
+    end
+
+    if bestMatch then
+        print(("✅ Best match: %q with confidence %.1f%%"):format(bestMatch, bestConfidence * 100))
+        result.name = bestMatch
+        result.confidence = bestConfidence
+    else
+        print("🚫 No known hints matched → DLL = GENERIC")
+        result.name = "GENERIC"
+        result.confidence = 0
+    end
+
+    return result
+end
+
+xUNC.rateLevel = function(self, core, security, filesystem, debug, env)
+    print("\n🔍 Calculating comprehensive level rating...")
+    local weights = { core = 0.4, security = 0.2, filesystem = 0.15, debug = 0.15, features = 0.1 }
+    local scores = {}
+    scores.core = core.weightedScore
+    print(("→ ✅ Core functions weighted score: %.2f/100 × %.2f = %.2f"):format(core.weightedScore, weights.core, core.weightedScore * weights.core))
+    scores.security = security.weightedScore
+    print(("→ ✅ Security functions weighted score: %.2f/100 × %.2f = %.2f"):format(security.weightedScore, weights.security, security.weightedScore * weights.security))
+    scores.filesystem = filesystem.weightedScore
+    print(("→ ✅ Filesystem functions weighted score: %.2f/100 × %.2f = %.2f"):format(filesystem.weightedScore, weights.filesystem, filesystem.weightedScore * weights.filesystem))
+    scores.debug = debug.weightedScore
+    print(("→ ✅ Debug functions weighted score: %.2f/100 × %.2f = %.2f"):format(debug.weightedScore, weights.debug, debug.weightedScore * weights.debug))
+
+    local featureScore = 0
+    if env.isLuau then featureScore = featureScore + 15 end
+    if env.hasUI then featureScore = featureScore + 20 end
+    if env.hasAdvancedMeta then featureScore = featureScore + 25 end
+    if env.isSecure then featureScore = featureScore + 20 end
+    if env.hasHWIDSpoofing then featureScore = featureScore + 10 end
+    if env.sandboxLevel >= 2 then featureScore = featureScore + 10 end
+    featureScore = math.min(100, featureScore)
+    scores.features = featureScore
+    print(("→ ✅ Environment features score: %.2f/100 × %.2f = %.2f"):format(featureScore, weights.features, featureScore * weights.features))
+
+    local finalScore = 0
+    for category, score in pairs(scores) do
+        finalScore = finalScore + (score * weights[category])
+    end
+    print(("→ ✅ Final weighted score: %.2f/100"):format(finalScore))
+
+    local level, tierName
+    if finalScore >= 95 then
+        level = "S+"
+        tierName = "Elite"
+    elseif finalScore >= 90 then
+        level = "S"
+        tierName = "Superior"
+    elseif finalScore >= 85 then
+        level = "A+"
+        tierName = "Excellent"
+    elseif finalScore >= 80 then
+        level = "A"
+        tierName = "Great"
+    elseif finalScore >= 75 then
+        level = "B+"
+        tierName = "Very Good"
+    elseif finalScore >= 70 then
+        level = "B"
+        tierName = "Good"
+    elseif finalScore >= 65 then
+        level = "B-"
+        tierName = "Above Average"
+    elseif finalScore >= 60 then
+        level = "C+"
+        tierName = "Average"
+    elseif finalScore >= 55 then
+        level = "C"
+        tierName = "Fair"
+    elseif finalScore >= 50 then
+        level = "C-"
+        tierName = "Below Average"
+    elseif finalScore >= 45 then
+        level = "D+"
+        tierName = "Poor"
+    elseif finalScore >= 40 then
+        level = "D"
+        tierName = "Very Poor"
+    elseif finalScore >= 35 then
+        level = "D-"
+        tierName = "Bad"
+    elseif finalScore >= 30 then
+        level = "E"
+        tierName = "Terrible"
+    else
+        level = "F"
+        tierName = "Abysmal"
+    end
+
+    print(("✅ Score %.2f → Level %s (%s)"):format(finalScore, level, tierName))
+    return { score = finalScore, level = level, tierName = tierName, categoryScores = scores }
+end
+
+xUNC.compareExecutors = function(self, score, dll)
+    print("\n🔍 Comparing to known executors...")
+    local comparisons = {}
+    print("→ ✅ Your score: " .. score)
+
+    for name, benchmark in pairs(self.executorBenchmarks) do
+        local difference = score - benchmark.score
+        local percentDiff = (difference / benchmark.score) * 100
+        local direction = difference >= 0 and "↑" or "↓"
+        local sign = difference >= 0 and "+" or ""
+        print(("  %s (%s - %.1f): %s%0.1f %s (%.1f%%)"):format(name, benchmark.tier, benchmark.score, sign, difference, direction, percentDiff))
+        comparisons[name] = { score = benchmark.score, tier = benchmark.tier, difference = difference, percentDiff = percentDiff }
+    end
+
+    local closest = nil
+    local minDiff = math.huge
+    for name, data in pairs(comparisons) do
+        local absDiff = math.abs(data.difference)
+        if absDiff < minDiff then
+            minDiff = absDiff
+            closest = name
+        end
+    end
+
+    if closest then
+        print(("\n→ ✅ Most similar to: %s (difference: %.1f points or %.1f%%)"):format(closest, comparisons[closest].difference, math.abs(comparisons[closest].percentDiff)))
+        if dll.name ~= "UNKNOWN" and dll.name ~= "GENERIC" then
+            for name, _ in pairs(comparisons) do
+                if string.lower(name):find(string.lower(dll.name)) or string.lower(dll.name):find(string.lower(name)) then
+                    print(("→ ✅ Possible executor match: %s (detected as %s)"):format(name, dll.name))
+                    break
+                end
+            end
+        end
+    end
+
+    return { comparisons = comparisons, closest = closest, closestData = closest and comparisons[closest] or nil }
+end
+
+xUNC.generateFingerprint = function(self, core, security, filesystem, debug, env)
+    print("\n🔍 Generating executor fingerprint...")
+    local fingerprint = {}
+    local coreFuncs = { "getrawmetatable", "getgenv", "hookfunction", "getfenv", "setfenv", "checkcaller", "getgc" }
+    fingerprint.coreCapabilities = {}
+    for _, func in ipairs(coreFuncs) do
+        for name, data in pairs(core.results) do
+            if name == func then
+                fingerprint.coreCapabilities[name] = data.available
+                break
+            end
+        end
+    end
+
+    local securityFuncs = { "checkcaller", "getthreadidentity", "setthreadidentity", "getidentity", "setidentity" }
+    fingerprint.securityCapabilities = {}
+    for _, func in ipairs(securityFuncs) do
+        for name, data in pairs(security.results) do
+            if name == func then
+                fingerprint.securityCapabilities[name] = data.available
+                break
+            end
+        end
+    end
+
+    local filesystemFuncs = { "readfile", "writefile", "appendfile", "delfile" }
+    fingerprint.filesystemCapabilities = {}
+    for _, func in ipairs(filesystemFuncs) do
+        for name, data in pairs(filesystem.results) do
+            if name == func then
+                fingerprint.filesystemCapabilities[name] = data.available
+                break
+            end
+        end
+    end
+
+    local debugFuncs = { "debug.getinfo", "debug.getupvalue", "debug.getconstant" }
+    fingerprint.debugCapabilities = {}
+    for _, func in ipairs(debugFuncs) do
+        for name, data in pairs(debug.results) do
+            if name == func then
+                fingerprint.debugCapabilities[name] = data.available
+                break
+            end
+        end
+    end
+
+    fingerprint.environment = {
+        isLuau = env.isLuau,
+        hasUI = env.hasUI,
+        hasAdvancedMeta = env.hasAdvancedMeta,
+        isSecure = env.isSecure,
+        sandboxLevel = env.sandboxLevel
+    }
+
+    local hash = ""
+    for _, category in pairs(fingerprint) do
+        if type(category) == "table" then
+            for _, value in pairs(category) do
+                hash = hash .. (value and "1" or "0")
+            end
+        end
+    end
+    fingerprint.hash = hash
+    print(("→ Generated fingerprint hash: %s"):format(hash))
+
+    return fingerprint
+end
+
+xUNC.run = function(self)
+    print("\n🌟 xUNC :: Advanced Unified Naming Convention Test v" .. self.version .. " 🌟")
+    print("⏱️ Test started at: " .. os.date("%Y-%m-%d %H:%M:%S"))
+    print("📡 Initializing comprehensive executor assessment...")
+    wait(0.5)
+
+    local coreResults = self:checkFunctionSet(self.functions, "core")
+    wait(0.2)
+    local securityResults = self:checkFunctionSet(self.securityFunctions, "security")
+    wait(0.2)
+    local filesystemResults = self:checkFunctionSet(self.fileSystemFunctions, "filesystem")
+    wait(0.2)
+    local debugResults = self:checkFunctionSet(self.debugFunctions, "debug")
+    wait(0.2)
+    local env = self:detectEnvironment()
+    wait(0.2)
+    local dll = self:estimateDLL()
+    wait(0.2)
+    local fingerprint = self:generateFingerprint(coreResults, securityResults, filesystemResults, debugResults, env)
+    wait(0.2)
+    local rating = self:rateLevel(coreResults, securityResults, filesystemResults, debugResults, env)
+    wait(0.2)
+    local comparison = self:compareExecutors(rating.score, dll)
+
+    print("\n📊 FINAL RESULTS SUMMARY 📊")
+    print("→ 🧷 Executor name: " .. (env.executorName or "Unknown"))
+    print("→ ☁️ DLL identification: " .. dll.name .. " (" .. math.floor(dll.confidence * 100) .. "%)")
+    print("→ ❕ Final score: " .. string.format("%.2f/100", rating.score))
+    print("→ 🎭 Performance tier: " .. rating.level .. " (" .. rating.tierName .. ")")
+    print("→ #️⃣ Fingerprint hash: " .. fingerprint.hash)
+    print("\n🔄 xUNC completed at: " .. os.date("%Y-%m-%d %H:%M:%S"))
+
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "💀",
+        Text = "SKIDDED xUNC :: Test completed successfully! Check console for detailed results.",
+        Duration = 5
+    })
+
+    return {
+        version = self.version,
+        timestamp = os.time(),
+        executorName = env.executorName,
+        dll = dll,
+        rating = rating,
+        comparison = comparison,
+        fingerprint = fingerprint,
+        results = {
+            core = coreResults,
+            security = securityResults,
+            filesystem = filesystemResults,
+            debug = debugResults
+        },
+        environment = env
+    }
+end
+
+return xUNC:run()
